@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScholarshipCard from '@/components/ScholarshipCard';
@@ -48,9 +48,9 @@ const Browse = () => {
   };
 
   // Apply filters whenever search term or filters change
-  useState(() => {
+  useEffect(() => {
     applyFilters();
-  });
+  }, [searchTerm, categoryFilter, levelFilter]);
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -85,10 +85,7 @@ const Browse = () => {
               <Input
                 placeholder="Search scholarships..."
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  applyFilters();
-                }}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 form-input"
               />
             </div>
@@ -96,10 +93,7 @@ const Browse = () => {
             {/* Category Filter */}
             <Select 
               value={categoryFilter} 
-              onValueChange={(value) => {
-                setCategoryFilter(value);
-                applyFilters();
-              }}
+              onValueChange={setCategoryFilter}
             >
               <SelectTrigger className="form-input">
                 <SelectValue placeholder="Select category" />
@@ -117,10 +111,7 @@ const Browse = () => {
             {/* Level Filter */}
             <Select 
               value={levelFilter} 
-              onValueChange={(value) => {
-                setLevelFilter(value);
-                applyFilters();
-              }}
+              onValueChange={setLevelFilter}
             >
               <SelectTrigger className="form-input">
                 <SelectValue placeholder="Select level" />

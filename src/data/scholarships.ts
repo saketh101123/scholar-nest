@@ -419,6 +419,234 @@ export const scholarshipsData = [
       "region": "North_East",
       "course_type": "general"
     }
+  },
+  {
+    "name": "National Overseas Scholarship for SC/ST",
+    "provider": "Ministry of Social Justice and Empowerment, Government of India",
+    "eligibility": "SC/ST students in Master's or PhD programs seeking to study abroad",
+    "amount": "Up to 100% financial assistance (tuition, living expenses) for 2 years",
+    "application_deadline": "Varies",
+    "official_website": "https://www.nsp.gov.in",
+    "level": "PG/PhD (Abroad)",
+    "category": "SC/ST",
+    "description": "Central scholarship enabling SC/ST students to pursue postgraduate or doctoral studies abroad, providing full funding for approved courses.",
+    "requirements": {
+      "caste": ["SC", "ST"],
+      "level": "PG-PhD"
+    }
+  },
+  {
+    "name": "Central Sector Scholarship for SC Students (Social Justice)",
+    "provider": "Department of Social Justice and Empowerment, Government of India",
+    "eligibility": "SC students with family income ≤ ₹6 lakh pursuing higher education",
+    "amount": "50% tuition fee reimbursement or ₹2,000/year (whichever is lower)",
+    "application_deadline": "Varies",
+    "official_website": "https://scholarships.gov.in",
+    "level": "UG/PG",
+    "category": "SC",
+    "description": "Central sector scholarship providing partial fee reimbursement for meritorious SC students in higher education.",
+    "requirements": {
+      "caste": "SC",
+      "income": 600000,
+      "level": "UG-PG"
+    }
+  },
+  {
+    "name": "Pragati Scholarship (AICTE) for Physically Handicapped Girls",
+    "provider": "All India Council for Technical Education (AICTE)",
+    "eligibility": "Female students with ≥40% disability in first year of diploma/degree technical courses",
+    "amount": "₹70,000 per year",
+    "application_deadline": "Varies",
+    "official_website": "https://www.aicte-india.org",
+    "level": "UG (Technical)",
+    "category": "Women",
+    "description": "AICTE scholarship providing ₹70,000 per year to differently-abled female students pursuing technical education.",
+    "requirements": {
+      "gender": "female",
+      "disability": 40,
+      "course_type": "technical",
+      "level": "UG"
+    }
+  },
+  {
+    "name": "NMMS (Karnataka) Secondary Scholarship",
+    "provider": "School Education Department, Government of Karnataka",
+    "eligibility": "Karnataka students from government schools who cleared NMMS state exam at Class 8, family income ≤ ₹1.5 lakh",
+    "amount": "₹6,000 per year",
+    "application_deadline": "Varies (State exam schedule)",
+    "official_website": "https://samajkalyana.kar.nic.in",
+    "level": "School",
+    "category": "All",
+    "description": "Karnataka state implementation of the NMMS scholarship, providing ₹6,000 per year to eligible Class 9–12 students from low-income families.",
+    "requirements": {
+      "class": "8",
+      "income": 150000,
+      "state": "Karnataka",
+      "exam": "NMMS_qualified"
+    }
+  },
+  {
+    "name": "Post-Matric Scholarship for Karnataka Minorities",
+    "provider": "Directorate of Minorities, Government of Karnataka",
+    "eligibility": "Karnataka-domicile students of minority communities (Muslims, Christians, etc.) in Class 11 up to PhD, income ≤ ₹2.5 lakh",
+    "amount": "Covers tuition fees, admission fees, and maintenance allowance as per rules",
+    "application_deadline": "August–September (annually)",
+    "official_website": "http://ssps.karnataka.gov.in",
+    "level": "School/UG/PG",
+    "category": "Minority",
+    "description": "State scholarship to encourage minority students of Karnataka (Class XI to PhD) to continue studies, covering tuition, admission and maintenance costs.",
+    "requirements": {
+      "religion": ["Muslim", "Christian", "Sikh", "Buddhist", "Parsi", "Jain"],
+      "state": "Karnataka",
+      "class": "11+",
+      "income": 250000
+    }
+  },
+  {
+    "name": "Merit-cum-Means Scholarship for Karnataka Minorities",
+    "provider": "Directorate of Minorities, Government of Karnataka",
+    "eligibility": "Karnataka minority students enrolled in professional/technical courses, with ≥50% marks and family income ≤ ₹2.5 lakh",
+    "amount": "Up to ₹30,000 (one-time/annual)",
+    "application_deadline": "August–September",
+    "official_website": "http://ssps.karnataka.gov.in",
+    "level": "UG/PG (Technical/Professional)",
+    "category": "Minority",
+    "description": "State scholarship for minority students in professional courses, requiring ≥50% marks and low income, offering up to ₹30,000 to support their education.",
+    "requirements": {
+      "religion": ["Muslim", "Christian", "Sikh", "Buddhist", "Parsi", "Jain"],
+      "state": "Karnataka",
+      "percentage": 50,
+      "income": 250000,
+      "course_type": "professional"
+    }
+  },
+  {
+    "name": "MPhil/PhD Fellowship for Karnataka Minorities",
+    "provider": "Directorate of Minorities, Government of Karnataka",
+    "eligibility": "Minority community candidates (Muslim, Christian, etc.) from Karnataka pursuing MPhil or PhD, age ≤ 35, income < ₹6 lakh",
+    "amount": "Up to ₹25,000 per month + ₹10,000 per year contingency",
+    "application_deadline": "May–June (typically)",
+    "official_website": "http://ssps.karnataka.gov.in",
+    "level": "PG (MPhil/PhD)",
+    "category": "Minority",
+    "description": "State fellowship scheme providing financial assistance to minority students from Karnataka for MPhil and PhD, with a monthly stipend and contingency grant.",
+    "requirements": {
+      "religion": ["Muslim", "Christian", "Sikh", "Buddhist", "Parsi", "Jain"],
+      "state": "Karnataka",
+      "age": 35,
+      "income": 600000,
+      "level": "PG-PhD"
+    }
+  },
+  {
+    "name": "Incentive Scheme for SSLC & 2nd PUC Toppers (Minority), Karnataka",
+    "provider": "Minority Welfare Department, Government of Karnataka",
+    "eligibility": "Minority students in Karnataka (Muslim, Christian, etc.) who scored ≥85% in SSLC or 2nd PUC",
+    "amount": "One-time incentive: ₹10,000 to SSLC toppers; ₹20,000 to 2nd PUC toppers",
+    "application_deadline": "After results (typically August–September)",
+    "official_website": "http://ssps.karnataka.gov.in",
+    "level": "School",
+    "category": "Minority",
+    "description": "State incentive for high-achieving minority students in Karnataka: ₹10,000 for top SSLC and ₹20,000 for top 2nd PUC performers among minorities.",
+    "requirements": {
+      "religion": ["Muslim", "Christian", "Sikh", "Buddhist", "Parsi", "Jain"],
+      "state": "Karnataka",
+      "percentage": 85,
+      "class": "10-12"
+    }
+  },
+  {
+    "name": "National Overseas Scholarship for Karnataka Minorities",
+    "provider": "Directorate of Minorities, Government of Karnataka",
+    "eligibility": "Karnataka-domicile minority students (Muslim, Christian, etc.) pursuing Master's or PhD abroad",
+    "amount": "Up to ₹20 lakh (for 2 years) covering course and living expenses",
+    "application_deadline": "May–July (typically)",
+    "official_website": "http://ssps.karnataka.gov.in",
+    "level": "PG/PhD (Abroad)",
+    "category": "Minority",
+    "description": "State scholarship for minority students of Karnataka to pursue Master's/PhD abroad, providing up to ₹20 lakh support for two years.",
+    "requirements": {
+      "religion": ["Muslim", "Christian", "Sikh", "Buddhist", "Parsi", "Jain"],
+      "state": "Karnataka",
+      "level": "PG-PhD"
+    }
+  },
+  {
+    "name": "Research Guidance Fellowship for PhD (Backward Classes), Karnataka",
+    "provider": "Department of Backward Classes Welfare, Government of Karnataka",
+    "eligibility": "Karnataka-domicile students (SC/ST/OBC) pursuing full-time PhD in select fields, with ≥55% in Master's",
+    "amount": "₹10,000 per month",
+    "application_deadline": "October–December (typically)",
+    "official_website": "https://www.kadbco.org/",
+    "level": "PhD",
+    "category": "SC/ST/OBC",
+    "description": "Karnataka state fellowship for SC/ST/OBC PhD students in select fields, providing ₹10,000 per month as research guidance support.",
+    "requirements": {
+      "caste": ["SC", "ST", "OBC"],
+      "state": "Karnataka",
+      "percentage": 55,
+      "level": "PhD"
+    }
+  },
+  {
+    "name": "Samagra Shikshana Karnataka Fellowship",
+    "provider": "Department of Education, Government of Karnataka",
+    "eligibility": "Regular postgraduate/professional degree holders (Social Sciences/Public Policy) with 3–10 years relevant work experience",
+    "amount": "Monthly stipend of ₹70,000 for fellowship duration",
+    "application_deadline": "February–March (typically)",
+    "official_website": "https://samagra.karnataka.gov.in",
+    "level": "Postgraduate/Professional",
+    "category": "All",
+    "description": "State fellowship for experienced social science or public policy professionals in Karnataka, offering a ₹70,000 monthly stipend to work on education initiatives.",
+    "requirements": {
+      "level": "PG",
+      "course": ["social_sciences", "public_policy"],
+      "experience": "3-10_years",
+      "state": "Karnataka"
+    }
+  },
+  {
+    "name": "Vidyanidhi Scholarship (NSP)",
+    "provider": "National Scholarship Portal (Government of India)",
+    "eligibility": "All Indian students as per various national scholarship criteria",
+    "amount": "Varies (depends on specific scholarship)",
+    "application_deadline": "Varies (NSP deadlines)",
+    "official_website": "https://www.scholarships.gov.in",
+    "level": "School/UG/PG",
+    "category": "All",
+    "description": "Umbrella term for multiple scholarships offered through the National Scholarship Portal; eligibility and benefits depend on individual schemes listed on NSP."
+  },
+  {
+    "name": "Central Sector Scheme of Scholarship for SC Students (CSSS)",
+    "provider": "Department of Social Justice and Empowerment, Government of India",
+    "eligibility": "SC students with family income ≤ ₹6 lakh pursuing higher education",
+    "amount": "50% tuition fee reimbursement or ₹2,000/year (whichever is lower)",
+    "application_deadline": "Varies",
+    "official_website": "https://www.socialjustice.gov.in",
+    "level": "UG/PG",
+    "category": "SC",
+    "description": "Central sector scholarship providing partial fee reimbursement for meritorious SC students in higher education.",
+    "requirements": {
+      "caste": "SC",
+      "income": 600000,
+      "level": "UG-PG"
+    }
+  },
+  {
+    "name": "Minister's Scholarship for SC/ST (Karnataka)",
+    "provider": "Backward Classes Welfare Department, Government of Karnataka",
+    "eligibility": "SC/ST students of Karnataka in professional courses (engineering, medicine, etc.)",
+    "amount": "50% or 100% fee reimbursement (depending on income and category)",
+    "application_deadline": "Varies",
+    "official_website": "http://scholarships.karnataka.gov.in",
+    "level": "UG/PG",
+    "category": "SC/ST",
+    "description": "State scholarship covering 50% or 100% of tuition fees for SC/ST students of Karnataka in professional education, based on income criteria.",
+    "requirements": {
+      "caste": ["SC", "ST"],
+      "state": "Karnataka",
+      "course_type": "professional"
+    }
   }
 ];
 
