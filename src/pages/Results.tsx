@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
@@ -65,7 +66,6 @@ const Results = () => {
               <SelectValue placeholder="Filter by Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
               <SelectItem value="Women">Women</SelectItem>
               <SelectItem value="SC">SC</SelectItem>
               <SelectItem value="ST">ST</SelectItem>
@@ -79,7 +79,6 @@ const Results = () => {
               <SelectValue placeholder="Filter by Level" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Levels</SelectItem>
               <SelectItem value="School">School</SelectItem>
               <SelectItem value="UG">Undergraduate</SelectItem>
               <SelectItem value="PG">Postgraduate</SelectItem>
