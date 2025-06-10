@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ScholarshipCard from '@/components/ScholarshipCard';
-import { scholarships } from '@/data/scholarships';
+import { scholarshipsData } from '@/data/scholarships';
 import Navbar from '@/components/Navbar';
 
 const Results = () => {
@@ -13,7 +13,7 @@ const Results = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [levelFilter, setLevelFilter] = useState('');
-  const [filteredScholarships, setFilteredScholarships] = useState(scholarships);
+  const [filteredScholarships, setFilteredScholarships] = useState(scholarshipsData);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Results = () => {
   }, []);
 
   useEffect(() => {
-    let results = scholarships.filter(scholarship =>
+    let results = scholarshipsData.filter(scholarship =>
       scholarship.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
