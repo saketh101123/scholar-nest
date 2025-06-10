@@ -167,11 +167,14 @@ const Browse = () => {
         {/* Scholarships Grid */}
         {filteredScholarships.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredScholarships.map((scholarship, index) => (
-              <div key={index} className="animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
-                <ScholarshipCard scholarship={scholarship} />
-              </div>
-            ))}
+            {filteredScholarships.map((scholarship, filteredIndex) => {
+              const originalIndex = scholarshipsData.findIndex(s => s.name === scholarship.name);
+              return (
+                <div key={originalIndex} className="animate-fade-in" style={{animationDelay: `${filteredIndex * 0.05}s`}}>
+                  <ScholarshipCard scholarship={scholarship} index={originalIndex} />
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16">

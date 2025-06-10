@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Eligibility from "./pages/Eligibility";
 import Results from "./pages/Results";
 import Browse from "./pages/Browse";
+import ScholarshipDetails from "./pages/ScholarshipDetails";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/eligibility" element={<Eligibility />} />
           <Route path="/results" element={<Results />} />
           <Route path="/browse" element={<Browse />} />
+          <Route path="/scholarship/:id" element={<ScholarshipDetails />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />

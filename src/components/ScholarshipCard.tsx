@@ -1,15 +1,16 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Calendar, DollarSign, User } from 'lucide-react';
+import { ExternalLink, Calendar, DollarSign, User, Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Scholarship } from '@/data/scholarships';
 
 interface ScholarshipCardProps {
   scholarship: Scholarship;
+  index: number;
 }
 
-const ScholarshipCard = ({ scholarship }: ScholarshipCardProps) => {
+const ScholarshipCard = ({ scholarship, index }: ScholarshipCardProps) => {
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case 'women':
@@ -72,7 +73,7 @@ const ScholarshipCard = ({ scholarship }: ScholarshipCardProps) => {
           {scholarship.description}
         </p>
         
-        <div className="pt-2">
+        <div className="pt-2 space-y-3">
           <Button 
             asChild 
             className="w-full btn-primary"
@@ -86,6 +87,20 @@ const ScholarshipCard = ({ scholarship }: ScholarshipCardProps) => {
               Apply Now
               <ExternalLink className="w-4 h-4 ml-2" />
             </a>
+          </Button>
+          
+          <Button 
+            asChild 
+            variant="outline"
+            className="w-full"
+          >
+            <Link 
+              to={`/scholarship/${index}`}
+              className="flex items-center justify-center"
+            >
+              More Details
+              <Info className="w-4 h-4 ml-2" />
+            </Link>
           </Button>
         </div>
       </CardContent>
