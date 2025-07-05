@@ -56,6 +56,27 @@ export type Database = {
           },
         ]
       }
+      local_bookmarks: {
+        Row: {
+          bookmarked_at: string
+          id: string
+          scholarship_data: Json
+          session_id: string
+        }
+        Insert: {
+          bookmarked_at?: string
+          id?: string
+          scholarship_data: Json
+          session_id: string
+        }
+        Update: {
+          bookmarked_at?: string
+          id?: string
+          scholarship_data?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           first_name: string | null
@@ -117,6 +138,86 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_scholarships: {
+        Row: {
+          id: string
+          notes: string | null
+          saved_at: string
+          scholarship_id: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          saved_at?: string
+          scholarship_id: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          saved_at?: string
+          scholarship_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_scholarships_scholarship_id_fkey"
+            columns: ["scholarship_id"]
+            isOneToOne: false
+            referencedRelation: "scholarships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scholarships: {
+        Row: {
+          amount: string
+          application_deadline: string
+          category: string
+          created_at: string
+          description: string
+          eligibility: string
+          id: string
+          level: string
+          name: string
+          official_website: string
+          provider: string
+          requirements: Json | null
+          updated_at: string
+        }
+        Insert: {
+          amount: string
+          application_deadline: string
+          category: string
+          created_at?: string
+          description: string
+          eligibility: string
+          id?: string
+          level: string
+          name: string
+          official_website: string
+          provider: string
+          requirements?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: string
+          application_deadline?: string
+          category?: string
+          created_at?: string
+          description?: string
+          eligibility?: string
+          id?: string
+          level?: string
+          name?: string
+          official_website?: string
+          provider?: string
+          requirements?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       warehouses: {
         Row: {
