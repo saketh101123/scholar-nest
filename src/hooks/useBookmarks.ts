@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,6 +8,7 @@ interface Bookmark {
   id: string;
   scholarship_data: any;
   saved_at: string;
+  notes?: string;
 }
 
 export const useBookmarks = () => {
