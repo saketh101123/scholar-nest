@@ -19,11 +19,29 @@ const BookmarkButton = ({
   const bookmarked = isBookmarked(scholarship);
   const bookmarkId = getBookmarkId(scholarship);
 
-  const handleClick = async () => {
-    if (bookmarked && bookmarkId) {
-      await removeBookmark(bookmarkId);
-    } else {
-      await addBookmark(scholarship);
+  console.log('BookmarkButton render:', {
+    scholarshipName: scholarship.name,
+    bookmarked,
+    bookmarkId
+  });
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Bookmark button clicked for:', scholarship.name);
+    console.log('Current state - bookmarked:', bookmarked, 'bookmarkId:', bookmarkId);
+    
+    try {
+      if (bookmarked && bookmarkId) {
+        console.log('Removing bookmark...');
+        await removeBookmark(bookmarkId);
+      } else {
+        console.log('Adding bookmark...');
+        await addBookmark(scholarship);
+      }
+    } catch (error) {
+      console.error('Error in bookmark button click:', error);
     }
   };
 

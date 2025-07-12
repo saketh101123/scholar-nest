@@ -26,12 +26,17 @@ export const useBookmarks = () => {
     clearLocalBookmarks,
   } = useLocalBookmarks();
 
+  console.log('Current user:', user ? 'logged in' : 'not logged in');
+  console.log('User bookmarks count:', bookmarks.length);
+  console.log('Local bookmarks count:', localBookmarks.length);
+
   // Load user bookmarks from database
   const loadUserBookmarks = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
+      console.log('Loading user bookmarks for user:', user.id);
       const { data, error } = await supabase
         .from('saved_scholarships')
         .select('*')
@@ -39,6 +44,7 @@ export const useBookmarks = () => {
         .order('saved_at', { ascending: false });
 
       if (error) throw error;
+      console.log('Loaded bookmarks:', data?.length || 0);
       setBookmarks(data || []);
     } catch (error: any) {
       console.error('Error loading bookmarks:', error);
@@ -57,6 +63,7 @@ export const useBookmarks = () => {
     if (!user) return { success: false, message: 'Not authenticated' };
 
     try {
+      console.log('Adding user bookmark for scholarship:', scholarship.name);
       const { data, error } = await supabase
         .from('saved_scholarships')
         .insert({
@@ -69,9 +76,11 @@ export const useBookmarks = () => {
 
       if (error) throw error;
 
+      console.log('Successfully added bookmark:', data.id);
       setBookmarks(prev => [data, ...prev]);
       return { success: true, message: 'Bookmark saved!' };
     } catch (error: any) {
+      console.error('Error adding bookmark:', error);
       if (error.code === '23505') {
         return { success: false, message: 'Already saved' };
       }
@@ -84,6 +93,7 @@ export const useBookmarks = () => {
     if (!user) return;
 
     try {
+      console.log('Removing user bookmark:', id);
       const { error } = await supabase
         .from('saved_scholarships')
         .delete()
@@ -91,12 +101,14 @@ export const useBookmarks = () => {
 
       if (error) throw error;
 
+      console.log('Successfully removed bookmark');
       setBookmarks(prev => prev.filter(b => b.id !== id));
       toast({
         title: 'Bookmark removed',
         description: 'Scholarship removed from your saved list.',
       });
     } catch (error: any) {
+      console.error('Error removing bookmark:', error);
       toast({
         title: 'Error',
         description: 'Failed to remove bookmark.',
@@ -107,6 +119,8 @@ export const useBookmarks = () => {
 
   // Main bookmark functions
   const addBookmark = async (scholarship: any, notes?: string) => {
+    console.log('addBookmark called for:', scholarship.name);
+    
     if (user) {
       try {
         const result = await addUserBookmark(scholarship, notes);
@@ -123,6 +137,7 @@ export const useBookmarks = () => {
           });
         }
       } catch (error) {
+        console.error('Error in addBookmark:', error);
         toast({
           title: 'Error',
           description: 'Failed to save bookmark.',
@@ -147,6 +162,8 @@ export const useBookmarks = () => {
   };
 
   const removeBookmark = async (id: string) => {
+    console.log('removeBookmark called for id:', id);
+    
     if (user && !id.startsWith('local-')) {
       await removeUserBookmark(id);
     } else {
@@ -159,19 +176,33 @@ export const useBookmarks = () => {
   };
 
   const isBookmarked = (scholarship: any) => {
+    console.log('Checking if bookmarked:', scholarship.name);
+    
     if (user) {
-      return bookmarks.some(b => b.scholarship_data.name === scholarship.name);
+      const found = bookmarks.some(b => {
+        const match = b.scholarship_data?.name === scholarship.name;
+        console.log(`Comparing "${b.scholarship_data?.name}" with "${scholarship.name}": ${match}`);
+        return match;
+      });
+      console.log('User bookmark result:', found);
+      return found;
     } else {
-      return isLocallyBookmarked(scholarship);
+      const found = isLocallyBookmarked(scholarship);
+      console.log('Local bookmark result:', found);
+      return found;
     }
   };
 
   const getBookmarkId = (scholarship: any) => {
     if (user) {
-      const bookmark = bookmarks.find(b => b.scholarship_data.name === scholarship.name);
-      return bookmark?.id;
+      const bookmark = bookmarks.find(b => b.scholarship_data?.name === scholarship.name);
+      const id = bookmark?.id;
+      console.log('Found user bookmark ID:', id);
+      return id;
     } else {
-      return getLocalBookmarkId(scholarship);
+      const id = getLocalBookmarkId(scholarship);
+      console.log('Found local bookmark ID:', id);
+      return id;
     }
   };
 
@@ -184,6 +215,7 @@ export const useBookmarks = () => {
     if (!user || localBookmarks.length === 0) return;
 
     try {
+      console.log('Migrating local bookmarks:', localBookmarks.length);
       const migrations = localBookmarks.map(bookmark => ({
         user_id: user.id,
         scholarship_data: bookmark.scholarship_data,
@@ -195,6 +227,7 @@ export const useBookmarks = () => {
         .insert(migrations);
 
       if (!error) {
+        console.log('Migration successful');
         clearLocalBookmarks();
         loadUserBookmarks();
         
@@ -211,12 +244,17 @@ export const useBookmarks = () => {
   // Effects
   useEffect(() => {
     if (user) {
+      console.log('User logged in, loading bookmarks');
       loadUserBookmarks();
+    } else {
+      console.log('No user, clearing bookmarks');
+      setBookmarks([]);
     }
   }, [user]);
 
   useEffect(() => {
     if (user && localBookmarks.length > 0) {
+      console.log('User logged in with local bookmarks, migrating');
       migrateLocalBookmarks();
     }
   }, [user, localBookmarks.length]);
