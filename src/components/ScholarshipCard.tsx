@@ -1,9 +1,11 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Calendar, DollarSign, User, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Scholarship } from '@/data/scholarships';
+import BookmarkButton from './BookmarkButton';
 
 interface ScholarshipCardProps {
   scholarship: Scholarship;
@@ -47,6 +49,7 @@ const ScholarshipCard = ({ scholarship, index }: ScholarshipCardProps) => {
               {scholarship.level}
             </Badge>
           </div>
+          <BookmarkButton scholarship={scholarship} size="sm" variant="ghost" />
         </div>
         
         <CardTitle className="text-xl font-bold text-gray-900 leading-tight">
