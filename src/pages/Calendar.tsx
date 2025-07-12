@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,7 +78,7 @@ const CalendarPage = () => {
       );
     }
     
-    if (categoryFilter) {
+    if (categoryFilter && categoryFilter !== 'all') {
       filtered = filtered.filter(scholarship => scholarship.category === categoryFilter);
     }
     
@@ -120,7 +121,7 @@ const CalendarPage = () => {
               <SelectValue placeholder="Filter by Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Women">Women</SelectItem>
               <SelectItem value="SC">SC</SelectItem>
               <SelectItem value="ST">ST</SelectItem>
