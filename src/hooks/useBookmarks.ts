@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLocalBookmarks } from './useLocalBookmarks';
 
 interface Bookmark {
   id: string;
@@ -13,32 +14,23 @@ interface Bookmark {
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [localBookmarks, setLocalBookmarks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const {
+    localBookmarks,
+    addLocalBookmark,
+    removeLocalBookmark,
+    isLocallyBookmarked,
+    getLocalBookmarkId,
+    clearLocalBookmarks,
+  } = useLocalBookmarks();
 
-  // Session ID for local bookmarks
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem('bookmarkSessionId');
-    if (!sessionId) {
-      sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('bookmarkSessionId', sessionId);
-    }
-    return sessionId;
-  };
-
-  // Load bookmarks on mount
-  useEffect(() => {
-    if (user) {
-      loadUserBookmarks();
-    } else {
-      loadLocalBookmarks();
-    }
-  }, [user]);
-
+  // Load user bookmarks from database
   const loadUserBookmarks = async () => {
     if (!user) return;
 
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('saved_scholarships')
@@ -50,120 +42,115 @@ export const useBookmarks = () => {
       setBookmarks(data || []);
     } catch (error: any) {
       console.error('Error loading bookmarks:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load bookmarks.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const loadLocalBookmarks = () => {
-    const stored = localStorage.getItem('localBookmarks');
-    if (stored) {
-      try {
-        setLocalBookmarks(JSON.parse(stored));
-      } catch (error) {
-        setLocalBookmarks([]);
+  // Add bookmark for authenticated users
+  const addUserBookmark = async (scholarship: any, notes?: string) => {
+    if (!user) return { success: false, message: 'Not authenticated' };
+
+    try {
+      const { data, error } = await supabase
+        .from('saved_scholarships')
+        .insert({
+          user_id: user.id,
+          scholarship_data: scholarship,
+          notes: notes,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setBookmarks(prev => [data, ...prev]);
+      return { success: true, message: 'Bookmark saved!' };
+    } catch (error: any) {
+      if (error.code === '23505') {
+        return { success: false, message: 'Already saved' };
       }
+      throw error;
     }
   };
 
-  const saveLocalBookmarks = (bookmarks: any[]) => {
-    localStorage.setItem('localBookmarks', JSON.stringify(bookmarks));
-    setLocalBookmarks(bookmarks);
+  // Remove bookmark for authenticated users
+  const removeUserBookmark = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('saved_scholarships')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setBookmarks(prev => prev.filter(b => b.id !== id));
+      toast({
+        title: 'Bookmark removed',
+        description: 'Scholarship removed from your saved list.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: 'Failed to remove bookmark.',
+        variant: 'destructive',
+      });
+    }
   };
 
+  // Main bookmark functions
   const addBookmark = async (scholarship: any, notes?: string) => {
     if (user) {
-      // Save to database for authenticated users
       try {
-        const { data, error } = await supabase
-          .from('saved_scholarships')
-          .insert({
-            user_id: user.id,
-            scholarship_data: scholarship,
-            notes: notes,
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        setBookmarks(prev => [data, ...prev]);
-        toast({
-          title: 'Bookmark saved!',
-          description: 'Scholarship added to your saved list.',
-        });
-      } catch (error: any) {
-        if (error.code === '23505') {
+        const result = await addUserBookmark(scholarship, notes);
+        if (result.success) {
           toast({
-            title: 'Already saved',
-            description: 'This scholarship is already in your saved list.',
-            variant: 'destructive',
+            title: 'Bookmark saved!',
+            description: 'Scholarship added to your saved list.',
           });
         } else {
           toast({
-            title: 'Error',
-            description: 'Failed to save bookmark.',
+            title: result.message,
+            description: 'This scholarship is already in your saved list.',
             variant: 'destructive',
           });
         }
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to save bookmark.',
+          variant: 'destructive',
+        });
       }
     } else {
-      // Save locally for non-authenticated users
-      const newBookmark = {
-        id: `local-${Date.now()}`,
-        scholarship_data: scholarship,
-        saved_at: new Date().toISOString(),
-        notes,
-      };
-
-      const existing = localBookmarks.find(b => 
-        b.scholarship_data.name === scholarship.name
-      );
-
-      if (existing) {
+      const result = addLocalBookmark(scholarship, notes);
+      if (result.success) {
         toast({
-          title: 'Already saved',
+          title: 'Bookmark saved locally!',
+          description: 'Sign in to sync your bookmarks across devices.',
+        });
+      } else {
+        toast({
+          title: result.message,
           description: 'This scholarship is already in your bookmarks.',
           variant: 'destructive',
         });
-        return;
       }
-
-      const updated = [newBookmark, ...localBookmarks];
-      saveLocalBookmarks(updated);
-      
-      toast({
-        title: 'Bookmark saved locally!',
-        description: 'Sign in to sync your bookmarks across devices.',
-      });
     }
   };
 
   const removeBookmark = async (id: string) => {
     if (user && !id.startsWith('local-')) {
-      // Remove from database
-      try {
-        const { error } = await supabase
-          .from('saved_scholarships')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
-
-        setBookmarks(prev => prev.filter(b => b.id !== id));
-        toast({
-          title: 'Bookmark removed',
-          description: 'Scholarship removed from your saved list.',
-        });
-      } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: 'Failed to remove bookmark.',
-          variant: 'destructive',
-        });
-      }
+      await removeUserBookmark(id);
     } else {
-      // Remove from local storage
-      const updated = localBookmarks.filter(b => b.id !== id);
-      saveLocalBookmarks(updated);
+      removeLocalBookmark(id);
       toast({
         title: 'Bookmark removed',
         description: 'Scholarship removed from local bookmarks.',
@@ -175,7 +162,7 @@ export const useBookmarks = () => {
     if (user) {
       return bookmarks.some(b => b.scholarship_data.name === scholarship.name);
     } else {
-      return localBookmarks.some(b => b.scholarship_data.name === scholarship.name);
+      return isLocallyBookmarked(scholarship);
     }
   };
 
@@ -184,8 +171,7 @@ export const useBookmarks = () => {
       const bookmark = bookmarks.find(b => b.scholarship_data.name === scholarship.name);
       return bookmark?.id;
     } else {
-      const bookmark = localBookmarks.find(b => b.scholarship_data.name === scholarship.name);
-      return bookmark?.id;
+      return getLocalBookmarkId(scholarship);
     }
   };
 
@@ -193,7 +179,7 @@ export const useBookmarks = () => {
     return user ? bookmarks : localBookmarks;
   };
 
-  // Migrate local bookmarks to user account when they sign in
+  // Migrate local bookmarks when user signs in
   const migrateLocalBookmarks = async () => {
     if (!user || localBookmarks.length === 0) return;
 
@@ -209,9 +195,7 @@ export const useBookmarks = () => {
         .insert(migrations);
 
       if (!error) {
-        // Clear local bookmarks after successful migration
-        localStorage.removeItem('localBookmarks');
-        setLocalBookmarks([]);
+        clearLocalBookmarks();
         loadUserBookmarks();
         
         toast({
@@ -224,12 +208,18 @@ export const useBookmarks = () => {
     }
   };
 
-  // Auto-migrate when user signs in
+  // Effects
+  useEffect(() => {
+    if (user) {
+      loadUserBookmarks();
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user && localBookmarks.length > 0) {
       migrateLocalBookmarks();
     }
-  }, [user]);
+  }, [user, localBookmarks.length]);
 
   return {
     bookmarks: getAllBookmarks(),
@@ -237,6 +227,6 @@ export const useBookmarks = () => {
     removeBookmark,
     isBookmarked,
     getBookmarkId,
-    loading: false,
+    loading,
   };
 };

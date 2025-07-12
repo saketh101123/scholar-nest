@@ -2,85 +2,90 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, GraduationCap } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { GraduationCap, Menu, Calendar, Bookmark } from 'lucide-react';
+import AuthButton from './AuthButton';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const navLinks = [
+  const isActive = (path: string) => location.pathname === path;
+
+  const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Check Eligibility', href: '/eligibility' },
-    { name: 'Browse Scholarships', href: '/browse' },
+    { name: 'Browse', href: '/browse' },
+    { name: 'Eligibility', href: '/eligibility' },
+    { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'FAQ', href: '/faq' },
     { name: 'Contact', href: '/contact' },
   ];
 
-  const isActive = (href: string) => location.pathname === href;
-
   return (
-    <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-scholar rounded-lg">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gradient">ScholarNest</span>
+            <span className="text-xl font-bold text-gradient">ScholarNest</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className={`transition-colors duration-200 ${
-                  isActive(link.href)
-                    ? 'text-scholar-blue-600 font-medium'
-                    : 'text-gray-600 hover:text-scholar-blue-600'
-                }`}
-              >
-                {link.name}
+          <div className="hidden md:flex items-center space-x-1">
+            {navigation.map((item) => (
+              <Link key={item.name} to={item.href}>
+                <Button
+                  variant={isActive(item.href) ? 'default' : 'ghost'}
+                  className="flex items-center space-x-1"
+                >
+                  {item.icon && <item.icon className="w-4 h-4" />}
+                  <span>{item.name}</span>
+                </Button>
               </Link>
             ))}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Auth Button */}
+          <div className="hidden md:flex">
+            <AuthButton />
+          </div>
+
+          {/* Mobile Menu */}
           <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80">
+                <div className="flex flex-col space-y-4 mt-8">
+                  {navigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Button
+                        variant={isActive(item.href) ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                      >
+                        {item.icon && <item.icon className="w-4 h-4 mr-2" />}
+                        {item.name}
+                      </Button>
+                    </Link>
+                  ))}
+                  <div className="pt-4 border-t">
+                    <AuthButton />
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                    isActive(link.href)
-                      ? 'text-scholar-blue-600 bg-scholar-blue-50'
-                      : 'text-gray-600 hover:text-scholar-blue-600 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );
