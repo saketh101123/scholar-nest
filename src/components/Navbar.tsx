@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { GraduationCap, Menu, Calendar, Bookmark } from 'lucide-react';
+import { GraduationCap, Menu, Calendar, LayoutDashboard } from 'lucide-react';
 import AuthButton from './AuthButton';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -16,6 +18,7 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Browse', href: '/browse' },
     { name: 'Eligibility', href: '/eligibility' },
+    ...(user ? [{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }] : []),
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'FAQ', href: '/faq' },
     { name: 'Contact', href: '/contact' },

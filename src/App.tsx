@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Calendar from "./pages/Calendar";
 import SavedScholarships from "./pages/SavedScholarships";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/eligibility" element={<Eligibility />} />
             <Route path="/results" element={<Results />} />
             <Route path="/browse" element={<Browse />} />
