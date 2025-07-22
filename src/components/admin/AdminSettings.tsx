@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Database, Mail, Security, Server } from 'lucide-react';
+import { Settings, Database, Mail, Shield, Server } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -150,7 +150,7 @@ const AdminSettings = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Security className="h-5 w-5" />
+            <Shield className="h-5 w-5" />
             Security & Access
           </CardTitle>
           <CardDescription>
