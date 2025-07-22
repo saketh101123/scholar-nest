@@ -1,16 +1,46 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { GraduationCap, Menu, Calendar, LayoutDashboard } from 'lucide-react';
+import { GraduationCap, Menu, Calendar, LayoutDashboard, Shield } from 'lucide-react';
 import AuthButton from './AuthButton';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (!error && profile?.role === 'admin' && user.email === 'saketh1011@gmail.com') {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -19,6 +49,7 @@ const Navbar = () => {
     { name: 'Browse', href: '/browse' },
     { name: 'Eligibility', href: '/eligibility' },
     ...(user ? [{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }] : []),
+    ...(isAdmin ? [{ name: 'Admin', href: '/admin', icon: Shield }] : []),
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'FAQ', href: '/faq' },
     { name: 'Contact', href: '/contact' },

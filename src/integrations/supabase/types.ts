@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          target_id: string | null
+          target_table: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Relationships: []
+      }
+      announcements: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_important: boolean | null
+          title: string
+          title_kannada: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_important?: boolean | null
+          title: string
+          title_kannada?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_important?: boolean | null
+          title?: string
+          title_kannada?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -61,6 +124,39 @@ export type Database = {
           },
         ]
       }
+      live_darshan: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_live: boolean | null
+          stream_url: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_live?: boolean | null
+          stream_url?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_live?: boolean | null
+          stream_url?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       local_bookmarks: {
         Row: {
           bookmarked_at: string
@@ -84,24 +180,72 @@ export type Database = {
       }
       profiles: {
         Row: {
+          email: string | null
           first_name: string | null
           id: string
           last_name: string | null
           phone_number: string | null
+          role: string | null
           updated_at: string | null
         }
         Insert: {
+          email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
           phone_number?: string | null
+          role?: string | null
           updated_at?: string | null
         }
         Update: {
+          email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
           phone_number?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pujas: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          description_kannada: string | null
+          duration_minutes: number | null
+          id: string
+          image_url: string | null
+          is_available: boolean | null
+          name: string
+          name_kannada: string | null
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          description_kannada?: string | null
+          duration_minutes?: number | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name: string
+          name_kannada?: string | null
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          description_kannada?: string | null
+          duration_minutes?: number | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name?: string
+          name_kannada?: string | null
+          price?: number
           updated_at?: string | null
         }
         Relationships: []
@@ -213,6 +357,45 @@ export type Database = {
           provider?: string
           requirements?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      temple_info: {
+        Row: {
+          address: string | null
+          banner_image_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          phone: string | null
+          timing_evening: string | null
+          timing_morning: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          banner_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          timing_evening?: string | null
+          timing_morning?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          banner_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          timing_evening?: string | null
+          timing_morning?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
