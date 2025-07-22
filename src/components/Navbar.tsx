@@ -17,21 +17,57 @@ const Navbar = () => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) {
+        console.log('No user found');
         setIsAdmin(false);
         return;
       }
 
+      console.log('Checking admin status for user:', user.email, user.id);
+
       try {
+        // First, let's check if the profile exists
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, email')
           .eq('id', user.id)
           .single();
 
-        if (!error && profile?.role === 'admin' && user.email === 'saketh1011@gmail.com') {
-          setIsAdmin(true);
+        console.log('Profile data:', profile);
+        console.log('Profile error:', error);
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          
+          // If profile doesn't exist, create it for saketh1011@gmail.com
+          if (error.code === 'PGRST116' && user.email === 'saketh1011@gmail.com') {
+            console.log('Creating admin profile for saketh1011@gmail.com');
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert([
+                {
+                  id: user.id,
+                  email: user.email,
+                  role: 'admin'
+                }
+              ])
+              .select()
+              .single();
+
+            console.log('New profile created:', newProfile);
+            console.log('Create error:', createError);
+
+            if (!createError && user.email === 'saketh1011@gmail.com') {
+              setIsAdmin(true);
+            }
+          } else {
+            setIsAdmin(false);
+          }
         } else {
-          setIsAdmin(false);
+          console.log('Profile role:', profile?.role);
+          console.log('User email:', user.email);
+          const isAdminUser = profile?.role === 'admin' && user.email === 'saketh1011@gmail.com';
+          console.log('Is admin user:', isAdminUser);
+          setIsAdmin(isAdminUser);
         }
       } catch (error) {
         console.error('Error checking admin status:', error);
