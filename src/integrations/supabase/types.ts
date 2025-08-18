@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
@@ -43,6 +43,44 @@ export type Database = {
           target_table?: string | null
         }
         Relationships: []
+      }
+      admin_sessions: {
+        Row: {
+          admin_id: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          session_token: string
+          user_agent: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          session_token: string
+          user_agent?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          session_token?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_sessions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       announcements: {
         Row: {
@@ -408,6 +446,7 @@ export type Database = {
           location: string
           name: string
           price: number
+          updated_at: string | null
         }
         Insert: {
           available?: boolean | null
@@ -417,6 +456,7 @@ export type Database = {
           location: string
           name: string
           price: number
+          updated_at?: string | null
         }
         Update: {
           available?: boolean | null
@@ -426,6 +466,7 @@ export type Database = {
           location?: string
           name?: string
           price?: number
+          updated_at?: string | null
         }
         Relationships: []
       }

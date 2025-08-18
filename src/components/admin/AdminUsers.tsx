@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Mail, Calendar, Shield } from 'lucide-react';
+import { Search, Mail, Calendar, Shield, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import AddUserForm from './AddUserForm';
 
 interface User {
   id: string;
@@ -22,6 +23,7 @@ const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddUserForm, setShowAddUserForm] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -117,10 +119,18 @@ const AdminUsers = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>
-            View and manage user accounts and permissions
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>
+                View and manage user accounts and permissions
+              </CardDescription>
+            </div>
+            <Button onClick={() => setShowAddUserForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="mb-6">
@@ -195,6 +205,12 @@ const AdminUsers = () => {
           )}
         </CardContent>
       </Card>
+
+      <AddUserForm 
+        isOpen={showAddUserForm}
+        onClose={() => setShowAddUserForm(false)}
+        onUserAdded={fetchUsers}
+      />
     </div>
   );
 };
