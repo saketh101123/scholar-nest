@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Mail, Calendar, Shield, Plus, User } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Search, Mail, Calendar, Shield, Plus, User, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import AddUserForm from './AddUserForm';
@@ -24,6 +25,7 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddUserForm, setShowAddUserForm] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,7 +34,6 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      // Get profiles data with email
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, email, first_name, last_name, role');
@@ -42,7 +43,6 @@ const AdminUsers = () => {
         throw profilesError;
       }
 
-      // Transform the data to include proper email information
       const usersData = profiles?.map(profile => ({
         id: profile.id,
         email: profile.email || 'No email',
@@ -91,6 +91,48 @@ const AdminUsers = () => {
         description: "Failed to update user role",
         variant: "destructive",
       });
+    }
+  };
+
+  const deleteUser = async (userId: string, userEmail: string) => {
+    setDeletingUserId(userId);
+    try {
+      // First delete from profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) throw profileError;
+
+      // Use admin function to delete from auth.users
+      const { error: authError } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
+
+      if (authError) {
+        console.error('Auth delete error:', authError);
+        // If auth delete fails, we should restore the profile
+        throw new Error('Failed to delete user from authentication system');
+      }
+
+      await logAdminAction('DELETE_USER', 'auth.users', userId, { email: userEmail });
+      
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+      
+      fetchUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -190,16 +232,53 @@ const AdminUsers = () => {
                         <Shield className="h-3 w-3 mr-1" />
                         {user.role || 'user'}
                       </Badge>
-                      {user.email !== 'saketh1011@gmail.com' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
-                          className="text-xs w-full sm:w-auto"
-                        >
-                          {user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
-                        </Button>
-                      )}
+                      
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        {user.email !== 'saketh1011@gmail.com' && (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
+                              className="text-xs flex-1 sm:flex-initial"
+                            >
+                              {user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-xs text-red-600 hover:text-red-800 hover:bg-red-50 flex-1 sm:flex-initial"
+                                  disabled={deletingUserId === user.id}
+                                >
+                                  <Trash2 className="h-3 w-3 mr-1" />
+                                  {deletingUserId === user.id ? 'Deleting...' : 'Delete'}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete user "{user.first_name} {user.last_name}" ({user.email})? 
+                                    This action cannot be undone and will permanently remove their account and all associated data.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteUser(user.id, user.email)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete User
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
