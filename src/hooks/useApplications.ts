@@ -21,6 +21,25 @@ export interface Application {
   };
 }
 
+type CreateApplicationData = {
+  scholarship_id: string;
+  status?: Application['status'];
+  progress?: number;
+  documents_submitted?: number;
+  total_documents?: number;
+  notes?: string;
+};
+
+type UpdateApplicationData = {
+  id: string;
+  status?: Application['status'];
+  progress?: number;
+  documents_submitted?: number;
+  total_documents?: number;
+  notes?: string;
+  submitted_at?: string;
+};
+
 export const useApplications = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -49,15 +68,22 @@ export const useApplications = () => {
   });
 
   const createApplication = useMutation({
-    mutationFn: async (applicationData: Partial<Application>) => {
+    mutationFn: async (applicationData: CreateApplicationData) => {
       if (!user) throw new Error('User not authenticated');
       
+      const insertData = {
+        user_id: user.id,
+        scholarship_id: applicationData.scholarship_id,
+        status: applicationData.status || 'draft' as const,
+        progress: applicationData.progress || 0,
+        documents_submitted: applicationData.documents_submitted || 0,
+        total_documents: applicationData.total_documents || 4,
+        notes: applicationData.notes,
+      };
+
       const { data, error } = await supabase
         .from('applications')
-        .insert({
-          ...applicationData,
-          user_id: user.id,
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -70,10 +96,12 @@ export const useApplications = () => {
   });
 
   const updateApplication = useMutation({
-    mutationFn: async ({ id, ...updateData }: Partial<Application> & { id: string }) => {
+    mutationFn: async (updateData: UpdateApplicationData) => {
+      const { id, ...updates } = updateData;
+      
       const { data, error } = await supabase
         .from('applications')
-        .update(updateData)
+        .update(updates)
         .eq('id', id)
         .select()
         .single();
