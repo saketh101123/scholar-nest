@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Mail, Calendar, Shield, Plus } from 'lucide-react';
+import { Search, Mail, Calendar, Shield, Plus, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import AddUserForm from './AddUserForm';
@@ -32,25 +32,28 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      // Get profiles data
+      // Get profiles data with email
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*');
+        .select('id, email, first_name, last_name, role');
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('Profiles error:', profilesError);
+        throw profilesError;
+      }
 
-      // Since we can't directly query auth.users, we'll work with profiles
-      // and combine with any auth data we can access
+      // Transform the data to include proper email information
       const usersData = profiles?.map(profile => ({
         id: profile.id,
-        email: profile.email || 'N/A',
-        created_at: new Date().toISOString(), // Placeholder since we can't access auth.users
-        last_sign_in_at: new Date().toISOString(), // Placeholder
+        email: profile.email || 'No email',
+        created_at: new Date().toISOString(),
+        last_sign_in_at: new Date().toISOString(),
         first_name: profile.first_name,
         last_name: profile.last_name,
-        role: profile.role
+        role: profile.role || 'user'
       })) || [];
 
+      console.log('Fetched users:', usersData);
       setUsers(usersData);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -112,84 +115,90 @@ const AdminUsers = () => {
   );
 
   if (loading) {
-    return <div className="text-center py-8">Loading users...</div>;
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span className="ml-2 text-muted-foreground">Loading users...</span>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg md:text-xl">User Management</CardTitle>
+              <CardDescription className="text-sm">
                 View and manage user accounts and permissions
               </CardDescription>
             </div>
-            <Button onClick={() => setShowAddUserForm(true)}>
+            <Button 
+              onClick={() => setShowAddUserForm(true)}
+              className="w-full sm:w-auto"
+              size="sm"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add User
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+        <CardContent className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {filteredUsers.map((user) => (
-              <Card key={user.id}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold">
-                          {user.first_name ? user.first_name.charAt(0) : user.email.charAt(0).toUpperCase()}
-                        </span>
+              <Card key={user.id} className="border">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start sm:items-center space-x-3 md:space-x-4 min-w-0 flex-1">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="text-xs md:text-sm text-primary" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-sm md:text-base truncate">
                           {user.first_name && user.last_name 
                             ? `${user.first_name} ${user.last_name}` 
                             : 'User'
                           }
                         </h3>
-                        <div className="flex items-center text-muted-foreground text-sm">
-                          <Mail className="h-4 w-4 mr-1" />
-                          {user.email}
+                        <div className="flex items-center text-muted-foreground text-xs md:text-sm">
+                          <Mail className="h-3 w-3 md:h-4 md:w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{user.email}</span>
                         </div>
-                        <div className="flex items-center gap-4 mt-1">
-                          <div className="flex items-center text-muted-foreground text-sm">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            Joined: {new Date(user.created_at).toLocaleDateString()}
-                          </div>
+                        <div className="flex items-center text-muted-foreground text-xs mt-1">
+                          <Calendar className="h-3 w-3 md:h-4 md:w-4 mr-1 flex-shrink-0" />
+                          <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                    
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
+                      <Badge 
+                        variant={user.role === 'admin' ? 'default' : 'secondary'}
+                        className="text-xs"
+                      >
                         <Shield className="h-3 w-3 mr-1" />
                         {user.role || 'user'}
                       </Badge>
                       {user.email !== 'saketh1011@gmail.com' && (
-                        <div className="flex gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
-                          >
-                            {user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
-                          </Button>
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
+                          className="text-xs w-full sm:w-auto"
+                        >
+                          {user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -200,7 +209,8 @@ const AdminUsers = () => {
 
           {filteredUsers.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              No users found matching your search.
+              <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No users found matching your search.</p>
             </div>
           )}
         </CardContent>

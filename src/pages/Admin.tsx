@@ -88,40 +88,45 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gradient flex items-center gap-2">
-            <Shield className="h-8 w-8" />
+      <div className="container mx-auto px-4 py-4 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gradient flex items-center gap-2">
+            <Shield className="h-6 w-6 md:h-8 md:w-8" />
             Admin Panel
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm md:text-base">
             Comprehensive management dashboard for ScholarNest
           </p>
         </div>
 
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="scholarships" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Scholarships
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="logs" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Logs
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="analytics" className="space-y-4 md:space-y-6">
+          <div className="overflow-x-auto">
+            <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full min-w-fit">
+              <TabsTrigger value="analytics" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Analytics</span>
+                <span className="sm:hidden">Stats</span>
+              </TabsTrigger>
+              <TabsTrigger value="scholarships" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <GraduationCap className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Scholarships</span>
+                <span className="sm:hidden">Schol</span>
+              </TabsTrigger>
+              <TabsTrigger value="users" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Users className="h-3 w-3 md:h-4 md:w-4" />
+                Users
+              </TabsTrigger>
+              <TabsTrigger value="logs" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <FileText className="h-3 w-3 md:h-4 md:w-4" />
+                Logs
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Settings</span>
+                <span className="sm:hidden">Set</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="analytics">
             <AdminAnalytics />
