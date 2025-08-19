@@ -38,20 +38,29 @@ const AdminLogs = () => {
 
   const fetchLogs = async () => {
     try {
-      const { data, error } = await supabase
+      // First get the logs
+      const { data: logsData, error: logsError } = await supabase
         .from('admin_logs')
-        .select(`
-          *,
-          profiles!admin_logs_admin_id_fkey(email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
 
-      if (error) throw error;
+      if (logsError) throw logsError;
 
-      const logsWithEmail = data?.map(log => ({
+      // Then get the profiles to match admin emails
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, email');
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of admin_id to email
+      const emailMap = new Map(profilesData?.map(profile => [profile.id, profile.email]) || []);
+
+      // Combine the data
+      const logsWithEmail = logsData?.map(log => ({
         ...log,
-        admin_email: log.profiles?.email || 'Unknown'
+        admin_email: emailMap.get(log.admin_id) || 'Unknown'
       })) || [];
 
       setLogs(logsWithEmail);
