@@ -10,47 +10,65 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, User, GraduationCap, DollarSign } from 'lucide-react';
-import { scholarshipsData } from '@/data/scholarships';
-
-interface FormData {
-  gender: string;
-  caste: string;
-  religion: string;
-  currentClass: string;
-  percentage: number;
-  familyIncome: number;
-  hasDisability: boolean;
-  disabilityPercentage: number;
-  courseType: string;
-  familyStatus: string;
-  age: number;
-}
+import { useAuth } from '@/contexts/AuthContext';
+import { useEligibility, EligibilityData } from '@/hooks/useEligibility';
+import { useToast } from '@/components/ui/use-toast';
 
 const Eligibility = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
+  const { user } = useAuth();
+  const { saveEligibility } = useEligibility();
+  const { toast } = useToast();
+  
+  const [formData, setFormData] = useState<EligibilityData>({
     gender: '',
     caste: '',
     religion: '',
-    currentClass: '',
+    current_class: '',
     percentage: 0,
-    familyIncome: 0,
-    hasDisability: false,
-    disabilityPercentage: 0,
-    courseType: '',
-    familyStatus: '',
+    family_income: 0,
+    has_disability: false,
+    disability_percentage: 0,
+    course_type: '',
+    family_status: '',
     age: 0,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Store form data and navigate to results
-    localStorage.setItem('eligibilityFormData', JSON.stringify(formData));
-    navigate('/results');
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to save your eligibility data.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+    
+    try {
+      await saveEligibility.mutateAsync(formData);
+      
+      toast({
+        title: "Eligibility Saved",
+        description: "Your eligibility data has been saved successfully.",
+      });
+      
+      // Store form data in localStorage for backward compatibility
+      localStorage.setItem('eligibilityFormData', JSON.stringify(formData));
+      navigate('/results');
+    } catch (error) {
+      console.error('Error saving eligibility:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save eligibility data. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleInputChange = (field: keyof FormData, value: any) => {
+  const handleInputChange = (field: keyof EligibilityData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -67,6 +85,11 @@ const Eligibility = () => {
           <p className="text-xl text-gray-600">
             Fill out the form below to discover scholarships that match your profile
           </p>
+          {!user && (
+            <p className="text-sm text-orange-600 mt-2">
+              Sign in to save your eligibility data permanently
+            </p>
+          )}
         </div>
 
         <Card className="shadow-xl border-0">
@@ -148,7 +171,7 @@ const Eligibility = () => {
 
                   <div>
                     <Label htmlFor="familyStatus" className="text-sm font-medium text-gray-700">Family Status</Label>
-                    <Select onValueChange={(value) => handleInputChange('familyStatus', value)}>
+                    <Select onValueChange={(value) => handleInputChange('family_status', value)}>
                       <SelectTrigger className="form-input">
                         <SelectValue placeholder="Select family status" />
                       </SelectTrigger>
@@ -172,7 +195,7 @@ const Eligibility = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="currentClass" className="text-sm font-medium text-gray-700">Current Class/Level *</Label>
-                    <Select onValueChange={(value) => handleInputChange('currentClass', value)} required>
+                    <Select onValueChange={(value) => handleInputChange('current_class', value)} required>
                       <SelectTrigger className="form-input">
                         <SelectValue placeholder="Select your current level" />
                       </SelectTrigger>
@@ -203,7 +226,7 @@ const Eligibility = () => {
 
                   <div>
                     <Label htmlFor="courseType" className="text-sm font-medium text-gray-700">Course Type</Label>
-                    <Select onValueChange={(value) => handleInputChange('courseType', value)}>
+                    <Select onValueChange={(value) => handleInputChange('course_type', value)}>
                       <SelectTrigger className="form-input">
                         <SelectValue placeholder="Select course type" />
                       </SelectTrigger>
@@ -234,7 +257,7 @@ const Eligibility = () => {
                     id="familyIncome"
                     className="form-input"
                     placeholder="Enter annual family income in rupees"
-                    onChange={(e) => handleInputChange('familyIncome', parseInt(e.target.value) || 0)}
+                    onChange={(e) => handleInputChange('family_income', parseInt(e.target.value) || 0)}
                     required
                   />
                 </div>
@@ -245,15 +268,15 @@ const Eligibility = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="hasDisability"
-                    checked={formData.hasDisability}
-                    onCheckedChange={(checked) => handleInputChange('hasDisability', checked)}
+                    checked={formData.has_disability}
+                    onCheckedChange={(checked) => handleInputChange('has_disability', checked)}
                   />
                   <Label htmlFor="hasDisability" className="text-sm font-medium text-gray-700">
                     Do you have any disability?
                   </Label>
                 </div>
                 
-                {formData.hasDisability && (
+                {formData.has_disability && (
                   <div>
                     <Label htmlFor="disabilityPercentage" className="text-sm font-medium text-gray-700">
                       Disability Percentage
@@ -264,14 +287,18 @@ const Eligibility = () => {
                       max="100"
                       className="form-input"
                       placeholder="Enter disability percentage"
-                      onChange={(e) => handleInputChange('disabilityPercentage', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleInputChange('disability_percentage', parseInt(e.target.value) || 0)}
                     />
                   </div>
                 )}
               </div>
 
-              <Button type="submit" className="w-full btn-primary text-lg py-4">
-                Find My Scholarships
+              <Button 
+                type="submit" 
+                className="w-full btn-primary text-lg py-4"
+                disabled={saveEligibility.isPending}
+              >
+                {saveEligibility.isPending ? 'Saving...' : 'Find My Scholarships'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </form>

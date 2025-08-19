@@ -115,6 +115,56 @@ export type Database = {
         }
         Relationships: []
       }
+      applications: {
+        Row: {
+          created_at: string
+          documents_submitted: number
+          id: string
+          notes: string | null
+          progress: number
+          scholarship_id: string
+          status: string
+          submitted_at: string | null
+          total_documents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          documents_submitted?: number
+          id?: string
+          notes?: string | null
+          progress?: number
+          scholarship_id: string
+          status?: string
+          submitted_at?: string | null
+          total_documents?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          documents_submitted?: number
+          id?: string
+          notes?: string | null
+          progress?: number
+          scholarship_id?: string
+          status?: string
+          submitted_at?: string | null
+          total_documents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_scholarship_id_fkey"
+            columns: ["scholarship_id"]
+            isOneToOne: false
+            referencedRelation: "scholarships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -434,6 +484,60 @@ export type Database = {
           timing_evening?: string | null
           timing_morning?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_eligibility: {
+        Row: {
+          age: number | null
+          caste: string | null
+          course_type: string | null
+          created_at: string
+          current_class: string
+          disability_percentage: number | null
+          family_income: number
+          family_status: string | null
+          gender: string
+          has_disability: boolean
+          id: string
+          percentage: number | null
+          religion: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          caste?: string | null
+          course_type?: string | null
+          created_at?: string
+          current_class: string
+          disability_percentage?: number | null
+          family_income: number
+          family_status?: string | null
+          gender: string
+          has_disability?: boolean
+          id?: string
+          percentage?: number | null
+          religion?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          caste?: string | null
+          course_type?: string | null
+          created_at?: string
+          current_class?: string
+          disability_percentage?: number | null
+          family_income?: number
+          family_status?: string | null
+          gender?: string
+          has_disability?: boolean
+          id?: string
+          percentage?: number | null
+          religion?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
