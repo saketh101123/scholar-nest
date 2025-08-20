@@ -610,6 +610,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      create_otp: {
+        Args: { p_code: string; p_email: string; p_expires_at: string }
+        Returns: boolean
+      }
+      verify_otp: {
+        Args: { p_code: string; p_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
