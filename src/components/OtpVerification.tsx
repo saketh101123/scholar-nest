@@ -74,29 +74,18 @@ const OtpVerification = ({ email, onVerified, onBack, mode }: OtpVerificationPro
     }
 
     try {
-      // Verify OTP
-      const { data: otpData, error: otpError } = await supabase
-        .from('otp_codes')
-        .select('*')
-        .eq('email', email)
-        .eq('code', otp)
-        .eq('verified', false)
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      // Verify OTP using secure function
+      const { data: isValid, error: otpError } = await supabase
+        .rpc('verify_otp', {
+          p_email: email,
+          p_code: otp
+        });
 
-      if (otpError || !otpData) {
+      if (otpError || !isValid) {
         setError('Invalid or expired verification code');
         setIsLoading(false);
         return;
       }
-
-      // Mark OTP as verified
-      await supabase
-        .from('otp_codes')
-        .update({ verified: true })
-        .eq('id', otpData.id);
 
       onVerified(true);
       

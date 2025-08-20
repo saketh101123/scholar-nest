@@ -35,16 +35,15 @@ const handler = async (req: Request): Promise<Response> => {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
-    // Store OTP in database
-    const { error: dbError } = await supabase
-      .from('otp_codes')
-      .insert({
-        email,
-        code: otp,
-        expires_at: expiresAt.toISOString()
+    // Store OTP in database using secure function
+    const { data: success, error: dbError } = await supabase
+      .rpc('create_otp', {
+        p_email: email,
+        p_code: otp,
+        p_expires_at: expiresAt.toISOString()
       });
 
-    if (dbError) {
+    if (dbError || !success) {
       console.error('Database error:', dbError);
       throw new Error('Failed to store OTP');
     }
