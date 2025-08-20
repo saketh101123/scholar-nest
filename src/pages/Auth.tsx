@@ -10,20 +10,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { GraduationCap, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import OtpVerification from '@/components/OtpVerification';
-
-type AuthStep = 'credentials' | 'otp';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<AuthStep>('credentials');
-  const [pendingEmail, setPendingEmail] = useState('');
-  const [pendingPassword, setPendingPassword] = useState('');
-  const [pendingFirstName, setPendingFirstName] = useState('');
-  const [pendingLastName, setPendingLastName] = useState('');
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const navigate = useNavigate();
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
@@ -35,28 +25,6 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  const sendOtpAndProceed = async (email: string, mode: 'signin' | 'signup') => {
-    try {
-      const response = await supabase.functions.invoke('send-otp', {
-        body: { email }
-      });
-
-      if (response.error) {
-        throw response.error;
-      }
-
-      setStep('otp');
-      setAuthMode(mode);
-      toast({
-        title: 'Verification Code Sent',
-        description: 'Please check your email for the verification code.',
-      });
-    } catch (error: any) {
-      console.error('Error sending OTP:', error);
-      setError('Failed to send verification code. Please try again.');
-    }
-  };
-
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -66,10 +34,21 @@ const Auth = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    setPendingEmail(email);
-    setPendingPassword(password);
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        setError(error.message);
+      } else {
+        toast({
+          title: 'Welcome back!',
+          description: 'You have successfully signed in.',
+        });
+        navigate('/');
+      }
+    } catch (error: any) {
+      setError(error.message || 'Sign in failed');
+    }
 
-    await sendOtpAndProceed(email, 'signin');
     setIsLoading(false);
   };
 
@@ -84,83 +63,22 @@ const Auth = () => {
     const firstName = formData.get('firstName') as string;
     const lastName = formData.get('lastName') as string;
 
-    setPendingEmail(email);
-    setPendingPassword(password);
-    setPendingFirstName(firstName);
-    setPendingLastName(lastName);
-
-    await sendOtpAndProceed(email, 'signup');
-    setIsLoading(false);
-  };
-
-  const handleOtpVerified = async (verified: boolean) => {
-    if (!verified) return;
-
-    setIsLoading(true);
-    setError('');
-
     try {
-      if (authMode === 'signin') {
-        const { error } = await signIn(pendingEmail, pendingPassword);
-        if (error) {
-          setError(error.message);
-        } else {
-          toast({
-            title: 'Welcome back!',
-            description: 'You have successfully signed in.',
-          });
-          navigate('/');
-        }
+      const { error } = await signUp(email, password, firstName, lastName);
+      if (error) {
+        setError(error.message);
       } else {
-        const { error } = await signUp(pendingEmail, pendingPassword, pendingFirstName, pendingLastName);
-        if (error) {
-          setError(error.message);
-        } else {
-          toast({
-            title: 'Account created!',
-            description: 'Please check your email to verify your account.',
-          });
-        }
+        toast({
+          title: 'Account created!',
+          description: 'Please check your email to verify your account.',
+        });
       }
     } catch (error: any) {
-      setError(error.message || 'Authentication failed');
+      setError(error.message || 'Sign up failed');
     }
 
     setIsLoading(false);
   };
-
-  const handleBackToCredentials = () => {
-    setStep('credentials');
-    setError('');
-    setPendingEmail('');
-    setPendingPassword('');
-    setPendingFirstName('');
-    setPendingLastName('');
-  };
-
-  if (step === 'otp') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex justify-center">
-            <Link to="/" className="flex items-center space-x-2 mb-8">
-              <div className="p-2 bg-gradient-scholar rounded-lg">
-                <GraduationCap className="h-8 w-8 text-white" />
-              </div>
-              <span className="text-3xl font-bold text-gradient">ScholarNest</span>
-            </Link>
-          </div>
-
-          <OtpVerification
-            email={pendingEmail}
-            onVerified={handleOtpVerified}
-            onBack={handleBackToCredentials}
-            mode={authMode}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -222,7 +140,7 @@ const Auth = () => {
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Sending verification...' : 'Continue with Email Verification'}
+                    {isLoading ? 'Signing in...' : 'Sign In'}
                   </Button>
                 </form>
               </TabsContent>
@@ -273,7 +191,7 @@ const Auth = () => {
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Sending verification...' : 'Continue with Email Verification'}
+                    {isLoading ? 'Creating account...' : 'Sign Up'}
                   </Button>
                 </form>
               </TabsContent>
