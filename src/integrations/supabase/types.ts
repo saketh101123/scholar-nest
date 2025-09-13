@@ -122,7 +122,7 @@ export type Database = {
           id: string
           notes: string | null
           progress: number
-          scholarship_id: string
+          scholarship_id: number
           status: string
           submitted_at: string | null
           total_documents: number
@@ -135,7 +135,7 @@ export type Database = {
           id?: string
           notes?: string | null
           progress?: number
-          scholarship_id: string
+          scholarship_id: number
           status?: string
           submitted_at?: string | null
           total_documents?: number
@@ -148,22 +148,14 @@ export type Database = {
           id?: string
           notes?: string | null
           progress?: number
-          scholarship_id?: string
+          scholarship_id?: number
           status?: string
           submitted_at?: string | null
           total_documents?: number
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "applications_scholarship_id_fkey"
-            columns: ["scholarship_id"]
-            isOneToOne: false
-            referencedRelation: "scholarships"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       bookings: {
         Row: {
@@ -263,33 +255,6 @@ export type Database = {
           id?: string
           scholarship_data?: Json
           session_id?: string
-        }
-        Relationships: []
-      }
-      otp_codes: {
-        Row: {
-          code: string
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          verified: boolean
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          email: string
-          expires_at: string
-          id?: string
-          verified?: boolean
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          verified?: boolean
         }
         Relationships: []
       }
@@ -435,7 +400,7 @@ export type Database = {
           created_at: string
           description: string
           eligibility: string
-          id: string
+          id: number
           level: string
           name: string
           official_website: string
@@ -450,7 +415,7 @@ export type Database = {
           created_at?: string
           description: string
           eligibility: string
-          id?: string
+          id?: number
           level: string
           name: string
           official_website: string
@@ -465,7 +430,7 @@ export type Database = {
           created_at?: string
           description?: string
           eligibility?: string
-          id?: string
+          id?: number
           level?: string
           name?: string
           official_website?: string
@@ -606,18 +571,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_expired_otps: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      create_otp: {
-        Args: { p_code: string; p_email: string; p_expires_at: string }
-        Returns: boolean
-      }
-      verify_otp: {
-        Args: { p_code: string; p_email: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
